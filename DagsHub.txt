@@ -1,0 +1,16 @@
+DagsHub Repository Link
+=======================
+
+Tautan ke DagsHub untuk menyimpan artefak MLflow secara online:
+
+https://dagshub.com/ardiradi/Wine-Quality-MLOps
+
+Petunjuk:
+1. Buat akun di https://dagshub.com
+2. Buat repository baru bernama "Wine-Quality-MLOps"
+3. Jalankan modelling_tuning.py dengan parameter DagsHub:
+   python modelling_tuning.py --dagshub
+
+Catatan:
+- Ganti <username> dengan username DagsHub Anda.
+- Pastikan sudah login dengan menjalankan: dagshub login
