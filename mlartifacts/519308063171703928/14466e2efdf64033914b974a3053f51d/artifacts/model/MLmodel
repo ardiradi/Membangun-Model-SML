@@ -1,0 +1,35 @@
+artifact_path: model
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.10
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+mlflow_version: 2.19.0
+model_size_bytes: 3302670
+model_uuid: 5061e1e40b724ffd9d3e6692a316bca9
+run_id: 14466e2efdf64033914b974a3053f51d
+signature:
+  inputs: '[{"type": "double", "name": "fixed acidity", "required": true}, {"type":
+    "double", "name": "volatile acidity", "required": true}, {"type": "double", "name":
+    "citric acid", "required": true}, {"type": "double", "name": "residual sugar",
+    "required": true}, {"type": "double", "name": "chlorides", "required": true},
+    {"type": "double", "name": "free sulfur dioxide", "required": true}, {"type":
+    "double", "name": "total sulfur dioxide", "required": true}, {"type": "double",
+    "name": "density", "required": true}, {"type": "double", "name": "pH", "required":
+    true}, {"type": "double", "name": "sulphates", "required": true}, {"type": "double",
+    "name": "alcohol", "required": true}, {"type": "double", "name": "wine_type",
+    "required": true}, {"type": "double", "name": "total_acidity", "required": true},
+    {"type": "double", "name": "free_sulfur_ratio", "required": true}, {"type": "double",
+    "name": "alcohol_density_ratio", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+utc_time_created: '2026-05-17 17:45:32.693687'

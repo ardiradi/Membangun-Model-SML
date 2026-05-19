@@ -35,7 +35,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def load_preprocessed_data(data_dir='wine_quality_preprocessing'):
+def load_preprocessed_data(data_dir='heart_disease_preprocessing'):
     """Memuat data yang sudah dipreproses."""
     X_train = pd.read_csv(os.path.join(data_dir, 'X_train.csv'))
     X_val = pd.read_csv(os.path.join(data_dir, 'X_val.csv'))
@@ -65,12 +65,13 @@ def plot_confusion_matrix(y_true, y_pred, labels, save_path):
 def plot_feature_importance(model, feature_names, save_path, top_n=15):
     """Membuat dan menyimpan plot feature importance."""
     importances = model.feature_importances_
-    indices = np.argsort(importances)[::-1][:top_n]
+    n_features = min(top_n, len(feature_names))
+    indices = np.argsort(importances)[::-1][:n_features]
     
     plt.figure(figsize=(10, 6))
-    colors = plt.cm.viridis(np.linspace(0.3, 0.9, top_n))
-    plt.barh(range(top_n), importances[indices][::-1], color=colors)
-    plt.yticks(range(top_n), [feature_names[i] for i in indices[::-1]])
+    colors = plt.cm.viridis(np.linspace(0.3, 0.9, n_features))
+    plt.barh(range(n_features), importances[indices][::-1], color=colors)
+    plt.yticks(range(n_features), [feature_names[i] for i in indices[::-1]])
     plt.xlabel('Feature Importance')
     plt.title('Top Feature Importances', fontsize=14, fontweight='bold')
     plt.tight_layout()
@@ -79,29 +80,23 @@ def plot_feature_importance(model, feature_names, save_path, top_n=15):
     print(f"[INFO] Feature importance disimpan: {save_path}")
 
 
-def plot_roc_curves(y_true, y_proba, classes, save_path):
-    """Membuat dan menyimpan ROC curves untuk multi-class."""
-    y_bin = label_binarize(y_true, classes=classes)
-    n_classes = len(classes)
+def plot_roc_curves(y_true, y_proba, save_path):
+    """Membuat dan menyimpan ROC curve untuk binary classification."""
+    fpr, tpr, _ = roc_curve(y_true, y_proba[:, 1])
+    roc_auc = auc(fpr, tpr)
     
     plt.figure(figsize=(8, 6))
-    colors = ['#2196F3', '#4CAF50', '#FF5722']
-    
-    for i in range(n_classes):
-        fpr, tpr, _ = roc_curve(y_bin[:, i], y_proba[:, i])
-        roc_auc = auc(fpr, tpr)
-        plt.plot(fpr, tpr, color=colors[i % len(colors)], linewidth=2,
-                 label=f'Class {classes[i]} (AUC = {roc_auc:.3f})')
-    
+    plt.plot(fpr, tpr, color='#2196F3', linewidth=2,
+             label=f'ROC Curve (AUC = {roc_auc:.3f})')
     plt.plot([0, 1], [0, 1], 'k--', linewidth=1, alpha=0.5)
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title('ROC Curves (Multi-class)', fontsize=14, fontweight='bold')
+    plt.title('ROC Curve - Heart Disease Classification', fontsize=14, fontweight='bold')
     plt.legend(loc='lower right')
     plt.tight_layout()
     plt.savefig(save_path, dpi=150)
     plt.close()
-    print(f"[INFO] ROC curves disimpan: {save_path}")
+    print(f"[INFO] ROC curve disimpan: {save_path}")
 
 
 def plot_learning_metrics(metrics_history, save_path):
@@ -151,14 +146,14 @@ def train_with_tuning(use_dagshub=False, dagshub_owner=None, dagshub_repo=None):
     else:
         mlflow.set_tracking_uri("http://127.0.0.1:5000")
     
-    mlflow.set_experiment("Wine_Quality_Tuning")
+    mlflow.set_experiment("Heart_Disease_Tuning")
     
     # Load data
     print("[INFO] Loading preprocessed data...")
     X_train, X_val, X_test, y_train, y_val, y_test = load_preprocessed_data()
     feature_names = X_train.columns.tolist()
     classes = sorted(np.unique(y_train))
-    class_labels = ['low', 'medium', 'high']
+    class_labels = ['no_disease', 'disease']
     
     # ==============================================
     # HYPERPARAMETER TUNING dengan GridSearchCV
@@ -268,9 +263,9 @@ def train_with_tuning(use_dagshub=False, dagshub_owner=None, dagshub_repo=None):
         plot_feature_importance(best_model, feature_names, fi_path)
         mlflow.log_artifact(fi_path)
         
-        # Artefak 3: ROC Curves
-        roc_path = os.path.join(artifacts_dir, "roc_curves.png")
-        plot_roc_curves(y_test, y_proba_test, classes, roc_path)
+        # Artefak 3: ROC Curve
+        roc_path = os.path.join(artifacts_dir, "roc_curve.png")
+        plot_roc_curves(y_test, y_proba_test, roc_path)
         mlflow.log_artifact(roc_path)
         
         # Artefak 4: Classification Report (JSON)

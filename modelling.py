@@ -2,7 +2,7 @@
 modelling.py
 Basic Model Training with MLflow Autolog (Kriteria 2 - Basic)
 
-Melatih model RandomForestClassifier pada Wine Quality dataset
+Melatih model RandomForestClassifier pada Heart Disease dataset
 menggunakan MLflow autolog untuk logging otomatis.
 
 Author: ardir
@@ -19,7 +19,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def load_preprocessed_data(data_dir='wine_quality_preprocessing'):
+def load_preprocessed_data(data_dir='heart_disease_preprocessing'):
     """Memuat data yang sudah dipreproses."""
     X_train = pd.read_csv(os.path.join(data_dir, 'X_train.csv'))
     X_val = pd.read_csv(os.path.join(data_dir, 'X_val.csv'))
@@ -38,7 +38,7 @@ def train_basic_model():
     """
     # Set MLflow tracking URI ke lokal
     mlflow.set_tracking_uri("http://127.0.0.1:5000")
-    mlflow.set_experiment("Wine_Quality_Basic")
+    mlflow.set_experiment("Heart_Disease_Basic")
     
     # Load data
     print("[INFO] Loading preprocessed data...")
@@ -82,7 +82,7 @@ def train_basic_model():
         print(f"  Test Accuracy:  {test_acc:.4f}")
         
         print(f"\n[Classification Report - Test Set]")
-        print(classification_report(y_test, y_pred_test))
+        print(classification_report(y_test, y_pred_test, target_names=['no_disease', 'disease']))
         
         print(f"[INFO] MLflow run ID: {mlflow.active_run().info.run_id}")
         print(f"[INFO] Model dan artefak disimpan di MLflow Tracking UI.")
